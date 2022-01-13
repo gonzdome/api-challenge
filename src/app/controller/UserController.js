@@ -1,4 +1,7 @@
 const bcrypt = require('bcrypt');
+require('dotenv').config();
+const jwt = require('jsonwebtoken');
+// const token = require('../../auth/jwt');
 const User = require('../models/UserModel');
 
 class UserController {
@@ -41,7 +44,9 @@ class UserController {
         return res.json({ message: 'Password does not match!' });
       }
 
-      return res.json(user);
+      const token = jwt.sign({ username: user.name }, process.env.TOKEN_SECRET, { expiresIn: '10s' });
+
+      return res.json({ user, token });
     } catch (err) {
       return res.json({ message: err.message });
     }
