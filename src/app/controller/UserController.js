@@ -26,6 +26,26 @@ class UserController {
       return res.json(err.message);
     }
   }
+
+  async login(req, res) {
+    try {
+      const { email, password } = req.body;
+      const user = await User.findOne({ email });
+
+      if (user === null || user === undefined) {
+        return res.json({ message: 'User does not exists!' });
+      }
+
+      const checkPassword = await bcrypt.compare(password, user.password);
+      if (!checkPassword) {
+        return res.json({ message: 'Password does not match!' });
+      }
+
+      return res.json(user);
+    } catch (err) {
+      return res.json({ message: err.message });
+    }
+  }
 }
 
 module.exports = new UserController();
