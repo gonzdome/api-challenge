@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const User = require('../models/UserModel');
 
 class UserController {
@@ -12,9 +13,15 @@ class UserController {
 
   async store(req, res) {
     try {
-      const user = req.body;
+      const { name, email } = req.body;
+
+      const salt = await bcrypt.genSalt(6);
+      const password = await bcrypt.hash(req.body.password, salt);
+
+      const user = { name, email, password };
+
       const send = await User(user).save();
-      return res.json({ error: false, user: send });
+      return res.json({ message: send });
     } catch (err) {
       return res.json(err.message);
     }
