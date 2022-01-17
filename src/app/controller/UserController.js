@@ -1,13 +1,14 @@
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
-// const token = require('../../auth/jwt');
 const User = require('../models/UserModel');
 
 class UserController {
   async index(req, res) {
     try {
-      const user = await User.find();
+      const name = req.params;
+      const user = await User.findOne(name);
+
       return res.json(user);
     } catch (err) {
       return res.json(err.message);
@@ -44,7 +45,7 @@ class UserController {
         return res.json({ message: 'Password does not match!' });
       }
 
-      const token = jwt.sign({ username: user.name }, process.env.TOKEN_SECRET, { expiresIn: '10s' });
+      const token = jwt.sign({ username: user.name }, process.env.TOKEN_SECRET, { expiresIn: '2m' });
 
       return res.json({ user, token });
     } catch (err) {
