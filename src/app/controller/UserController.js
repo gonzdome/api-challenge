@@ -9,7 +9,7 @@ class UserController {
       const name = req.params;
       const user = await User.findOne(name);
 
-      return res.json(user);
+      return res.status(200).json(user);
     } catch (err) {
       return res.json(err.message);
     }
@@ -25,7 +25,7 @@ class UserController {
       const user = { name, email, password };
 
       const send = await User(user).save();
-      return res.json({ message: send });
+      return res.status(200).json({ message: send });
     } catch (err) {
       return res.json(err.message);
     }
@@ -37,17 +37,17 @@ class UserController {
       const user = await User.findOne({ email });
 
       if (user === null || user === undefined) {
-        return res.json({ message: 'User does not exists!' });
+        return res.status(404).json({ message: 'User does not exists!' });
       }
 
       const checkPassword = await bcrypt.compare(password, user.password);
       if (!checkPassword) {
-        return res.json({ message: 'Password does not match!' });
+        return res.status(401).json({ message: 'Password does not match!' });
       }
 
       const token = jwt.sign({ username: user.name }, process.env.TOKEN_SECRET, { expiresIn: '2m' });
 
-      return res.json({ user, token });
+      return res.status(200).json({ user, token });
     } catch (err) {
       return res.json({ message: err.message });
     }
